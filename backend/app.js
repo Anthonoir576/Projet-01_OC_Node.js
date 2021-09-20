@@ -10,6 +10,7 @@ const app = express();
 
 
 /* *** 03 *** */
+/* Réponse pour le moment pour tous type de requete effectuer sur celle-ci */
 app.use((request, response) => {
 
     response.json( {message : 'Votre requête a bien été reçue'});
