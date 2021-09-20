@@ -4,7 +4,7 @@ const http = require('http');
 
 /* Création du SERVEUR */
 /* On appel la methode createServer() du package http */
-/* Prend en argument 2 choses, la requète et la réponse */
+/* Prend une fonction en 2 argument, la requète et la réponse */
 const server = http.createServer((request, response) => {
 
     response.end('Reponse serveur SECONDE is here');
