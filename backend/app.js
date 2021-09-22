@@ -10,6 +10,7 @@ const app = express();
 
 
 /* *** 03 *** */
+/* ###### MIDDLEWARE ###### */
 /* Réponse pour le moment pour tous type de requete effectuer sur celle-ci */
 /* 1ere argument la requete, le 2eme la reponse, la 3eme next, qui permet de passé au prochain middleware .*/
 app.use((request, response, next) => {
@@ -18,6 +19,7 @@ app.use((request, response, next) => {
     next();
 
 });
+
 /* status 201 created, et le changement de statue de la requete */
 app.use((request, response, next) => {
 
