@@ -1,17 +1,20 @@
 
-/* ************ EXPRESS ************** */
-/* ************ MONGOOSE ************** */
+/* ************ EXPRESS MONGOOSE(MangoDB) ************** */
+
 
 /* *** 01 *** */
 /* Importation de express */
 const express = require('express');
 
-/* Importation de mongoDB */
+/* Importation de mongoose */
 const mongoose = require('mongoose');
 
 /* Pour gérer la demande POST provenant de l'application front-end, nous devrons être capables d'extraire l'objet JSON de la demande. Il nous faudra le package body-parser . Installez-le en tant que dépendance de production à l'aide de npm : Importez-le dans votre fichier app.js : */
 const bodyParser = require('body-parser');
 
+/* Pour pouvoir utiliser notre nouveau modèle Mongoose dans l'application, nous devons l'importer dans le fichier app.js */
+const Thing = require('./models/thing');
+const { response } = require('express');
 
 /* Importation de la Bdd créer sur mongoDB nom dutilisateur et mot de passe. */
 mongoose.connect("mongodb+srv://Anthonoir576:475719711993@bdd.t7znw.mongodb.net/Bdd?retryWrites=true&w=majority", {
@@ -61,34 +64,35 @@ app.use(bodyParser.json());
 /* Maintenant, body-parser a analysé le corps de la demande. Au lieu de l'écrire dans un middleware .use() qui traiterait toutes les requêtes, nous allons l'écrire dans un.post() qui ne traitera que les requêtes de type POST : */
 app.post('/api/stuff', (request, response, next) => {
 
-    console.log(request.body);
-    response.status(201).json({
-        message: 'Objet créé !'
-    });
+  /* on a besoin donc du titre de la description etc.. On aurait pu ecrire tous ca, mais le raccourci js '...' permet de faire la même chose En gros on copie les champs dans le body de la requet post. donc le title, description etc..  ON SUPPRIME l'id de la requete car il serra generé par mongoDB */
+
+  /*  Ici, vous créez une instance de votre modèle Thing en lui passant un objet JavaScript contenant toutes les informations requises du corps de requête analysé (en ayant supprimé en amont le faux_id envoyé par le front-end). L'opérateur spread ... est utilisé pour faire une copie de tous les éléments de req.body Ce modèle comporte une méthode save() qui enregistre simplement votre Thing dans la base de données. La base de données MongoDB est fractionnée en collections : le nom de la collection est défini par défaut sur le pluriel du nom du modèle. Ici, ce sera Things. La méthode save() renvoie une Promise. Ainsi, dans notre bloc then() , nous renverrons une réponse de réussite avec un code 201 de réussite. Dans notre bloc catch() , nous renverrons une réponse avec l'erreur générée par Mongoose ainsi qu'un code d'erreur 400. */
+  delete request.body._id;
+
+  const thing = new Thing({
+
+    ...request.body
+
+  });
+
+  /* Pour enregistrer cet objet dans la bdd. La methode save() enregistre l'objet dans la base et retourne un promise */
+  thing.save()
+  .then(() => response.status(201).json({ message: 'Objet enregistré !'}))
+  .catch(error => response.status(400).json({error}));
 
 });
 
-/* /api/stuff serra la route de l'api, l'url de l'appli front va faire une requete a cette url la . a sont extention. il renverra un code 200 si la reponse est reussite en json de l'array stuff */
+/* /api/stuff serra la route de l'api, l'url de l'appli front va faire une requete a cette url la . a sont extention. Désormais, nous pouvons implémenter notre route GET afin qu'elle renvoie tous les Things dans la base de données */
+
+/* ans l'exemple ci-dessus, nous utilisons la méthode find() dans notre modèle Mongoose afin de renvoyer un tableau contenant tous les Things dans notre base de données. À présent, si vous ajoutez un Thing , il doit s'afficher immédiatement sur votre page d'articles en vente.
+
+En revanche, si vous cliquez sur l'un des Things , l'affichage d'un seul élément ne fonctionne pas. En effet, il tente d'effectuer un appel GET différent pour trouver un Thing individuel. Implémentons cette route maintenant. */
 app.use('/api/stuff', (req, res, next) => {
-    const stuff = [
-      {
-        _id: 'oeihfzeoi',
-        title: 'Mon premier objet',
-        description: 'Les infos de mon premier objet',
-        imageUrl: 'https://cdn.pixabay.com/photo/2019/06/11/18/56/camera-4267692_1280.jpg',
-        price: 4900,
-        userId: 'qsomihvqios',
-      },
-      {
-        _id: 'oeihfzeomoihi',
-        title: 'Mon deuxième objet',
-        description: 'Les infos de mon deuxième objet',
-        imageUrl: 'https://cdn.pixabay.com/photo/2019/06/11/18/56/camera-4267692_1280.jpg',
-        price: 2900,
-        userId: 'qsomihvqios',
-      },
-    ];
-    res.status(200).json(stuff);
+
+  Thing.find()
+  .then( things => res.status(200).json(things))
+  .catch(error => res.status(400).json({error}));
+
 });
 
 
