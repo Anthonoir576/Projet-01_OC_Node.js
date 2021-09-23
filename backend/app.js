@@ -1,12 +1,25 @@
 
 /* ************ EXPRESS ************** */
+/* ************ MONGOOSE ************** */
 
 /* *** 01 *** */
 /* Importation de express */
 const express = require('express');
 
+/* Importation de mongoDB */
+const mongoose = require('mongoose');
+
 /* Pour gérer la demande POST provenant de l'application front-end, nous devrons être capables d'extraire l'objet JSON de la demande. Il nous faudra le package body-parser . Installez-le en tant que dépendance de production à l'aide de npm : Importez-le dans votre fichier app.js : */
 const bodyParser = require('body-parser');
+
+
+/* Importation de la Bdd créer sur mongoDB nom dutilisateur et mot de passe. */
+mongoose.connect("mongodb+srv://Anthonoir576:475719711993@bdd.t7znw.mongodb.net/Bdd?retryWrites=true&w=majority", {
+   useNewUrlParser: true, useUnifiedTopology: true 
+})
+.then(() => console.log('Connection a mongoDB réussie !'))
+.catch(() => console.log('Connection a mongoDB échouée !'));
+
 
 /* *** 02 *** */
 /* Notre application */
@@ -85,17 +98,5 @@ module.exports = app;
 
 
 
-/* ************ MONGOOSE ************** */
-
-/* *** 01 *** */
-/* Importation de mongoDB */
-const mongoose = require('mongoose');
 
 
-/* *** 02 *** */
-/* Importation de la Bdd créer sur mongoDB nom dutilisateur et mot de passe. */
-mongoose.connect("mongodb+srv://Anthonoir576:475719711993@bdd.t7znw.mongodb.net/Bdd?retryWrites=true&w=majority", {
-   useNewUrlParser: true, useUnifiedTopology: true 
-})
-.then(() => console.log('Connection a mongoDB réussie !'))
-.catch(() => console.log('Connection a mongoDB échouée !'));
