@@ -61,6 +61,8 @@ app.use((request, response, next) => {
 /* Enfin, définissez sa fonction json comme middleware global pour votre application, juste après avoir défini les headers de la réponse : */
 app.use(bodyParser.json());
 
+
+/* ### POST ### */
 /* Maintenant, body-parser a analysé le corps de la demande. Au lieu de l'écrire dans un middleware .use() qui traiterait toutes les requêtes, nous allons l'écrire dans un.post() qui ne traitera que les requêtes de type POST : */
 app.post('/api/stuff', (request, response, next) => {
 
@@ -82,6 +84,8 @@ app.post('/api/stuff', (request, response, next) => {
 
 });
 
+
+/* ### GET ### */
 /* /api/stuff serra la route de l'api, l'url de l'appli front va faire une requete a cette url la . a sont extention. Désormais, nous pouvons implémenter notre route GET afin qu'elle renvoie tous les Things dans la base de données */
 
 /* ans l'exemple ci-dessus, nous utilisons la méthode find() dans notre modèle Mongoose afin de renvoyer un tableau contenant tous les Things dans notre base de données. À présent, si vous ajoutez un Thing , il doit s'afficher immédiatement sur votre page d'articles en vente.
