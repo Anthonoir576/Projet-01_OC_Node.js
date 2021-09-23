@@ -1,4 +1,6 @@
 
+/* ************ EXPRESS ************** */
+
 /* *** 01 *** */
 /* Importation de express */
 const express = require('express');
@@ -80,3 +82,20 @@ app.use('/api/stuff', (req, res, next) => {
 /* *** 04 *** */
 /* On exporte la constante app afin d'y accéder depuis les autres fichiers de notre projet notamment node */
 module.exports = app;
+
+
+
+/* ************ MONGOOSE ************** */
+
+/* *** 01 *** */
+/* Importation de mongoDB */
+const mongoose = require('mongoose');
+
+
+/* *** 02 *** */
+/* Importation de la Bdd créer sur mongoDB nom dutilisateur et mot de passe. */
+mongoose.connect("mongodb+srv://Anthonoir576:475719711993@bdd.t7znw.mongodb.net/Bdd?retryWrites=true&w=majority", {
+   useNewUrlParser: true, useUnifiedTopology: true 
+})
+.then(() => console.log('Connection a mongoDB réussie !'))
+.catch(() => console.log('Connection a mongoDB échouée !'));
