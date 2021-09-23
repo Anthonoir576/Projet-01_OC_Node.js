@@ -14,7 +14,7 @@ const bodyParser = require('body-parser');
 
 /* Pour pouvoir utiliser notre nouveau modèle Mongoose dans l'application, nous devons l'importer dans le fichier app.js */
 const Thing = require('./models/thing');
-const { response } = require('express');
+
 
 /* Importation de la Bdd créer sur mongoDB nom dutilisateur et mot de passe. */
 mongoose.connect("mongodb+srv://Anthonoir576:475719711993@bdd.t7znw.mongodb.net/Bdd?retryWrites=true&w=majority", {
@@ -52,7 +52,7 @@ app.use((request, response, next) => {
 
     response.setHeader('Access-Control-Allow-Origin', '*');
     response.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-with, Content, Accept, Content-Type, Authorization');
-    response.setHeader('Access-Control-Allow-Methodes', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+    response.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
 
     next();
 
@@ -85,13 +85,51 @@ app.post('/api/stuff', (request, response, next) => {
 });
 
 
+/* ### PUT ### */
+/* Modifie un element */
+/* Ajoutons une autre route à notre application, juste en dessous de notre route GET individuelle. Cette fois, elle répondra aux requêtes PUT : Ci-dessus, nous exploitons la méthode updateOne() dans notre modèle Thing . Cela nous permet de mettre à jour le Thing qui correspond à l'objet que nous passons comme premier argument. Nous utilisons aussi le paramètre id passé dans la demande et le remplaçons par le Thing passé comme second argument. Vous pouvez maintenant tester votre nouvelle route : cliquez sur un Thing de l'application, puis sur son bouton Modifier, changez ses paramètres puis sauvegardez. Vous envoyez alors un Thing modifié au back-end. En revenant sur la page des articles, vous devriez retrouver votre article modifié. */
+app.put('/api/stuff/:id', (request, response, next) => {
+
+  Thing.updateOne({ _id: request.params.id}, {...request.body, _id: request.params.id})
+    .then(() => response.status(200).json({ message: 'Objet modifié !'}))
+    .catch(error => response.status(400).json({error}));
+
+});
+
+/* ### DELETE ### */
+/* SUPPRIME UN */
+/* La méthode deleteOne() de notre modèle fonctionne comme findOne() et updateOne() dans le sens où nous lui passons un objet correspondant au document à supprimer. Nous envoyons ensuite une réponse de réussite ou d'échec au front-end. */
+app.delete('/api/stuff/:id', (request, response, next) => {
+
+  Thing.deleteOne({ _id: request.params.id})
+    .then(() => response.status(200).json({ message: 'Objet supprimé !'}))
+    .catch(error => response.status(400).json({error}));
+
+});
+
+
 /* ### GET ### */
+/* RECUPERE UN */
+/* Dans cette route : nous utilisons la méthode get() pour répondre uniquement aux demandes GET à cet endpoint ;
+nous utilisons deux-points : en face du segment dynamique de la route pour la rendre accessible en tant que paramètre ; nous utilisons ensuite la méthode findOne() dans notre modèle Thing pour trouver le Thing unique ayant le même _id que le paramètre de la requête ; ce Thing est ensuite retourné dans une Promise et envoyé au front-end ; si aucun Thing n'est trouvé ou si une erreur se produit, nous envoyons une erreur 404 au front-end, avec l'erreur générée. */
+/* le :id dit a express que cette partie de la route et dynamique */
+app.get('/api/stuff/:id', (request, response, next) => {
+
+  Thing.findOne({ _id: request.params.id })
+    .then(thing => response.status(200).json(thing))
+    .catch(error => response.status(404).json({error}));
+
+});
+
+
+/* ### GET ### */
+/* RECUPERE TOUS */
 /* /api/stuff serra la route de l'api, l'url de l'appli front va faire une requete a cette url la . a sont extention. Désormais, nous pouvons implémenter notre route GET afin qu'elle renvoie tous les Things dans la base de données */
 
 /* ans l'exemple ci-dessus, nous utilisons la méthode find() dans notre modèle Mongoose afin de renvoyer un tableau contenant tous les Things dans notre base de données. À présent, si vous ajoutez un Thing , il doit s'afficher immédiatement sur votre page d'articles en vente.
 
 En revanche, si vous cliquez sur l'un des Things , l'affichage d'un seul élément ne fonctionne pas. En effet, il tente d'effectuer un appel GET différent pour trouver un Thing individuel. Implémentons cette route maintenant. */
-app.use('/api/stuff', (req, res, next) => {
+app.get('/api/stuff', (req, res, next) => {
 
   Thing.find()
   .then( things => res.status(200).json(things))
