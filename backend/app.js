@@ -38,15 +38,11 @@ const app = express();
 le premier header permet de donner l'acces a lapi a tous le monde, on autorise laccest a certain header, ainsi que les methodes utilisé. cela aura pour effet de d'autorisé lacces a l'application d'acceder a lapi sans probleme  ne pas oublier dappeler next, pour effectuer le prochain middleware */
 
 /* 
-    Ces headers permettent :
-
-    d'accéder à notre API depuis n'importe quelle origine ( '*' ) ;
-
-    d'ajouter les headers mentionnés aux requêtes envoyées vers notre API (Origin , X-Requested-With , etc.) ;
-
-    d'envoyer des requêtes avec les méthodes mentionnées ( GET ,POST , etc.).
-
-    Comme vous pouvez le voir dans le code, le middleware ne prend pas d'adresse en premier paramètre afin de s'appliquer à toutes les routes. Cela permettra à toutes les demandes de toutes les origines d'accéder à votre API. Vous pouvez également ajouter des URL d'images valides aux stuff renvoyés par l'API, en terminant la route GET. Si vous actualisez à présent l'application front-end, vous devriez voir vos articles en vente : 
+  Ces headers permettent :
+  d'accéder à notre API depuis n'importe quelle origine ( '*' ) ;
+  d'ajouter les headers mentionnés aux requêtes envoyées vers notre API (Origin , X-Requested-With , etc.) ;
+  d'envoyer des requêtes avec les méthodes mentionnées ( GET ,POST , etc.).
+  Comme vous pouvez le voir dans le code, le middleware ne prend pas d'adresse en premier paramètre afin de s'appliquer à toutes les routes. Cela permettra à toutes les demandes de toutes les origines d'accéder à votre API. Vous pouvez également ajouter des URL d'images valides aux stuff renvoyés par l'API, en terminant la route GET. Si vous actualisez à présent l'application front-end, vous devriez voir vos articles en vente : 
 */
 app.use((request, response, next) => {
 
