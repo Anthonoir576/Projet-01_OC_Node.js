@@ -1,4 +1,5 @@
 const Thing = require('../models/Thing');
+const fs = require('fs'); /* fileSystem de node */
 
 exports.createThing = (request, response, next) => {
 
@@ -48,12 +49,31 @@ exports.modifyThing =  (request, response, next) => {
 
 };
 
-exports.deleteThing = (request, response, next) => {
+exports.deleteThing = (req, res, next) => {
 
-    Thing.deleteOne({ _id: request.params.id})
-        .then(() => response.status(200).json({ message: 'Objet supprimé !'}))
-        .catch(error => response.status(400).json({error}));
-    
+    /* Dans cette fonction :
+    nous utilisons l'ID que nous recevons comme paramètre pour accéder au Thing correspondant dans la base de données ;
+    nous utilisons le fait de savoir que notre URL d'image contient un segment /images/ pour séparer le nom de fichier ;
+    nous utilisons ensuite la fonction unlink du package fs pour supprimer ce fichier, en lui passant le fichier à supprimer et le callback à exécuter une fois ce fichier supprimé ;
+    dans le callback, nous implémentons la logique d'origine, en supprimant le Thing de la base de données.
+    Notre API peut désormais gérer correctement toutes les opérations CRUD contenant des fichiers : lorsqu'un utilisateur crée un Thing , met à jour un Thing existant ou supprime un Thing ! */
+
+    Thing.findOne({ _id: req.params.id })
+        .then(thing => {
+
+            const filename = thing.imageUrl.split('/images/')[1];
+
+            fs.unlink(`images/${filename}`, () => {
+
+                Thing.deleteOne({ _id: req.params.id })
+                .then(() => res.status(200).json({ message: 'Objet supprimé !'}))
+                .catch(error => res.status(400).json({ error }));
+
+            });
+
+        })
+        .catch(error => res.status(500).json({ error }));
+
 };
 
 exports.getOneThing =  (request, response, next) => {
