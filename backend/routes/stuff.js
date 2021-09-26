@@ -3,8 +3,8 @@
 const express = require('express');
 const router = express.Router();
 
-/* Pour pouvoir utiliser notre nouveau modèle Mongoose dans l'application, nous devons l'importer dans le fichier app.js */
-const Thing = require('../models/thing');
+/* Pour pouvoir utiliser notre nouveau modèle Mongoose dans l'application, nous devons l'importer dans le fichier */
+const stuffCtrl = require('../controllers/stuff');
 
 /* ###### MIDDLEWARE ###### */
 /* Réponse pour le moment pour tous type de requete effectuer sur celle-ci */
@@ -15,48 +15,19 @@ le premier header permet de donner l'acces a lapi a tous le monde, on autorise l
 
 /* ### POST ### */
 /* Maintenant, body-parser a analysé le corps de la demande. Au lieu de l'écrire dans un middleware .use() qui traiterait toutes les requêtes, nous allons l'écrire dans un.post() qui ne traitera que les requêtes de type POST : */
-router.post('/', (request, response, next) => {
-
-    /* on a besoin donc du titre de la description etc.. On aurait pu ecrire tous ca, mais le raccourci js '...' permet de faire la même chose En gros on copie les champs dans le body de la requet post. donc le title, description etc..  ON SUPPRIME l'id de la requete car il serra generé par mongoDB */
-  
-    /*  Ici, vous créez une instance de votre modèle Thing en lui passant un objet JavaScript contenant toutes les informations requises du corps de requête analysé (en ayant supprimé en amont le faux_id envoyé par le front-end). L'opérateur spread ... est utilisé pour faire une copie de tous les éléments de req.body Ce modèle comporte une méthode save() qui enregistre simplement votre Thing dans la base de données. La base de données MongoDB est fractionnée en collections : le nom de la collection est défini par défaut sur le pluriel du nom du modèle. Ici, ce sera Things. La méthode save() renvoie une Promise. Ainsi, dans notre bloc then() , nous renverrons une réponse de réussite avec un code 201 de réussite. Dans notre bloc catch() , nous renverrons une réponse avec l'erreur générée par Mongoose ainsi qu'un code d'erreur 400. */
-    delete request.body._id;
-  
-    const thing = new Thing({
-  
-      ...request.body
-  
-    });
-  
-    /* Pour enregistrer cet objet dans la bdd. La methode save() enregistre l'objet dans la base et retourne un promise */
-    thing.save()
-    .then(() => response.status(201).json({ message: 'Objet enregistré !'}))
-    .catch(error => response.status(400).json({error}));
-  
-});
+router.post('/', stuffCtrl.createThing);
   
   
 /* ### PUT ### */
 /* Modifie un element */
 /* Ajoutons une autre route à notre application, juste en dessous de notre route GET individuelle. Cette fois, elle répondra aux requêtes PUT : Ci-dessus, nous exploitons la méthode updateOne() dans notre modèle Thing . Cela nous permet de mettre à jour le Thing qui correspond à l'objet que nous passons comme premier argument. Nous utilisons aussi le paramètre id passé dans la demande et le remplaçons par le Thing passé comme second argument. Vous pouvez maintenant tester votre nouvelle route : cliquez sur un Thing de l'application, puis sur son bouton Modifier, changez ses paramètres puis sauvegardez. Vous envoyez alors un Thing modifié au back-end. En revenant sur la page des articles, vous devriez retrouver votre article modifié. */
-router.put('/:id', (request, response, next) => {
+router.put('/:id', stuffCtrl.modifyThing);
 
-Thing.updateOne({ _id: request.params.id}, {...request.body, _id: request.params.id})
-    .then(() => response.status(200).json({ message: 'Objet modifié !'}))
-    .catch(error => response.status(400).json({error}));
-
-});
 
 /* ### DELETE ### */
 /* SUPPRIME UN */
 /* La méthode deleteOne() de notre modèle fonctionne comme findOne() et updateOne() dans le sens où nous lui passons un objet correspondant au document à supprimer. Nous envoyons ensuite une réponse de réussite ou d'échec au front-end. */
-router.delete('/:id', (request, response, next) => {
-
-Thing.deleteOne({ _id: request.params.id})
-    .then(() => response.status(200).json({ message: 'Objet supprimé !'}))
-    .catch(error => response.status(400).json({error}));
-
-});
+router.delete('/:id', stuffCtrl.deleteThing);
 
 
 /* ### GET ### */
@@ -64,13 +35,7 @@ Thing.deleteOne({ _id: request.params.id})
 /* Dans cette route : nous utilisons la méthode get() pour répondre uniquement aux demandes GET à cet endpoint ;
 nous utilisons deux-points : en face du segment dynamique de la route pour la rendre accessible en tant que paramètre ; nous utilisons ensuite la méthode findOne() dans notre modèle Thing pour trouver le Thing unique ayant le même _id que le paramètre de la requête ; ce Thing est ensuite retourné dans une Promise et envoyé au front-end ; si aucun Thing n'est trouvé ou si une erreur se produit, nous envoyons une erreur 404 au front-end, avec l'erreur générée. */
 /* le :id dit a express que cette partie de la route et dynamique */
-router.get('/:id', (request, response, next) => {
-
-Thing.findOne({ _id: request.params.id })
-    .then(thing => response.status(200).json(thing))
-    .catch(error => response.status(404).json({error}));
-
-});
+router.get('/:id', stuffCtrl.getOneThing);
 
 
 /* ### GET ### */
@@ -80,13 +45,8 @@ Thing.findOne({ _id: request.params.id })
 /* ans l'exemple ci-dessus, nous utilisons la méthode find() dans notre modèle Mongoose afin de renvoyer un tableau contenant tous les Things dans notre base de données. À présent, si vous ajoutez un Thing , il doit s'afficher immédiatement sur votre page d'articles en vente.
 
 En revanche, si vous cliquez sur l'un des Things , l'affichage d'un seul élément ne fonctionne pas. En effet, il tente d'effectuer un appel GET différent pour trouver un Thing individuel. Implémentons cette route maintenant. */
-router.get('/', (req, res, next) => {
+router.get('/', stuffCtrl.getAllThings);
 
-    Thing.find()
-    .then( things => res.status(200).json(things))
-    .catch(error => res.status(400).json({error}));
-
-});
 
 /* On Réexporte le routeur, de ce fichier là */
 module.exports = router; 

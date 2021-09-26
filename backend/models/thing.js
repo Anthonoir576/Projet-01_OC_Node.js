@@ -15,7 +15,6 @@ const mongoose = require('mongoose');
 
 /* Création d'un shéma, afin que les données saisi sont bien celle attendu */
 /* la fonction shema et mise a disposition par le package mongoose ou l'on va passé un objet dont notre shema aura besoin */
-/*  */
 const thingSchema = mongoose.Schema({
     
     /* A noté que le _id: est généré directement par mangoDB */
