@@ -17,6 +17,8 @@ const stuffCtrl = require('../controllers/stuff');
 /* 1ere argument la requete, le 2eme la reponse, la 3eme next, qui permet de passé au prochain middleware. Rajout d'un middleware c'est le premier executer par le serveur, middleware general on ne met pas de route specifique il serra donc appliquer a toute les requetes a notre serveur 
 le premier header permet de donner l'acces a lapi a tous le monde, on autorise laccest a certain header, ainsi que les methodes utilisé. cela aura pour effet de d'autorisé lacces a l'application d'acceder a lapi sans probleme  ne pas oublier dappeler next, pour effectuer le prochain middleware */
 
+/* L'ordre des middlewares est important ! Si nous devons placer multer avant le middleware d'authentification, même les images des requêtes non authentifiées seront enregistrées dans le serveur. Veillez à placer multer après auth ! */
+
 
 /* ### POST ### */
 /* Maintenant, body-parser a analysé le corps de la demande. Au lieu de l'écrire dans un middleware .use() qui traiterait toutes les requêtes, nous allons l'écrire dans un.post() qui ne traitera que les requêtes de type POST : */

@@ -9,6 +9,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 /* Importation de mongoose */
 const mongoose = require('mongoose');
+/* PATH */
+const path = require('path');
 
 /* Importation des middlewares des objets dans un fichier séparé */
 const stuffRoutes = require('./routes/stuff');
@@ -47,7 +49,8 @@ app.use(bodyParser.json());
 app.use('/api/stuff', stuffRoutes);
 /* Utilisation des middlewares stocker dans un fichier user.js */
 app.use('/api/auth', userRoutes);
-
+/* Image upload par lutilisateur */
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
 /* *** 04 *** */
 /* On exporte la constante app afin d'y accéder depuis les autres fichiers de notre projet notamment node */
